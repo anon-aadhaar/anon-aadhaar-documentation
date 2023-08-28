@@ -2,54 +2,20 @@
 sidebar_position: 1
 ---
 
-# Manage Docs Versions
+# How to extract your certificate from your Aadhaar pdf
 
-Docusaurus can manage multiple versions of your docs.
+For using the app, you will need your adhaar card in a pdf format, downloaded from an official government portal. You will also need to extract a certificate file (.cer), following those simple steps on Adobe Acrobat Reader:
 
-## Create a docs version
+1. Open the signature panel:
+   ![Signature panel](./img/sig_panel.png)
 
-Release a version 1.0 of your project:
+2. Browse the certificate details
+   ![Certificate details](./img/certif_details.png)
 
-```bash
-npm run docusaurus docs:version 1.0
-```
+3. Click on the export button
+   ![Certificate details](./img/export_button.png)
 
-The `docs` folder is copied into `versioned_docs/version-1.0` and `versions.json` is created.
+4. Save the file as a `Certificate File`
+   ![Certificate details](./img/save_as_certificate.png)
 
-Your docs now have 2 versions:
-
-- `1.0` at `http://localhost:3000/docs/` for the version 1.0 docs
-- `current` at `http://localhost:3000/docs/next/` for the **upcoming, unreleased docs**
-
-## Add a Version Dropdown
-
-To navigate seamlessly across versions, add a version dropdown.
-
-Modify the `docusaurus.config.js` file:
-
-```js title="docusaurus.config.js"
-module.exports = {
-  themeConfig: {
-    navbar: {
-      items: [
-        // highlight-start
-        {
-          type: 'docsVersionDropdown',
-        },
-        // highlight-end
-      ],
-    },
-  },
-};
-```
-
-The docs version dropdown appears in your navbar:
-
-![Docs Version Dropdown](./img/docsVersionDropdown.png)
-
-## Update an existing version
-
-It is possible to edit versioned docs in their respective folder:
-
-- `versioned_docs/version-1.0/hello.md` updates `http://localhost:3000/docs/hello`
-- `docs/hello.md` updates `http://localhost:3000/docs/next/hello`
+You can now use your certificate as an input to generate your ZKP.

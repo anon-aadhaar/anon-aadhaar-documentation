@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
-# How to integrate Anon Aadhaar in your app
+# Anon Aadhaar quick setup
 
 ## Install the `anon-aadhaar-react` package
 

@@ -118,3 +118,8 @@ export default function Home() {
 ```
 
 You can find an example app [here](https://github.com/anon-aadhaar-private/anon-aadhaar-example)
+
+To test the proof generation and authentication flow, you can download these files:
+
+- [Signed pdf](/signed.pdf)
+- [Certificate file](/certificate.cer)

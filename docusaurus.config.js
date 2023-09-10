@@ -8,7 +8,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 const config = {
   title: "Anon Aadhaar Documentation",
   tagline: "Anon Aadhaar documentation website",
-  favicon: "img/pse_logo.png",
+  favicon: "img/anonAadhaarLogo.png",
 
   // Set the production url of your site here
   url: "https://anon-aadhaar-doc.vercel.app/",
@@ -60,7 +60,7 @@ const config = {
         title: "Anon Aadhaar",
         logo: {
           alt: "Anon Aadhaar Logo",
-          src: "img/pse_logo.png",
+          src: "img/anonAadhaarLogo.png",
         },
         items: [
           {

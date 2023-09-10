@@ -6,6 +6,8 @@ sidebar_position: 0
 
 Let's discover **Anon Aadhaar**.
 
+![Anon Aadhaar Banner](./img/anonAadhaarBanner.png)
+
 ## What's Anon Aadhaar?
 
 ### Overview

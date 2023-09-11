@@ -16,6 +16,7 @@ For using the app, you will need your adhaar card in a pdf format, downloaded fr
    ![Certificate details](./img/export_button.png)
 
 4. Save the file as a `Certificate File`
+
    ![Certificate details](./img/save_as_certificate.png)
 
 You can now use your certificate as an input to generate your ZKP.

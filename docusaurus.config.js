@@ -128,7 +128,7 @@ const config = {
         copyright: `Copyright © ${new Date().getFullYear()} Anon Aadhaar. Built by PSE.`,
       },
       prism: {
-        theme: lightCodeTheme,
+        theme: darkCodeTheme,
         darkTheme: darkCodeTheme,
       },
     }),

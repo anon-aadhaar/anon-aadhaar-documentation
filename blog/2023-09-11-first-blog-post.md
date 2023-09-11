@@ -185,7 +185,7 @@ export default function App({ Component, pageProps }: AppProps) {
 Our user can now connect his wallet using the Web3Modal.
 
 ```jsx
-<WalletMultiButton />
+<Web3Button />
 ```
 
 ## Create our voting smart contract

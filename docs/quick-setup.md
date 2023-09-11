@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# Anon Aadhaar quick setup
+# Quick setup
 
 ## Install the `anon-aadhaar-react` package
 

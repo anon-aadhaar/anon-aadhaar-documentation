@@ -44,6 +44,11 @@ const config = {
           editUrl:
             "https://github.com/privacy-scaling-explorations/anon-aadhaar",
         },
+        blog: {
+          showReadingTime: true,
+          editUrl:
+            "https://github.com/anon-aadhaar-private/anon-aadhaar-documentation",
+        },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
@@ -69,6 +74,7 @@ const config = {
             position: "left",
             label: "Tutorial",
           },
+          { to: "/blog", label: "Blog", position: "left" },
           {
             href: "https://github.com/privacy-scaling-explorations/anon-aadhaar",
             label: "GitHub",
@@ -111,6 +117,10 @@ const config = {
               {
                 label: "GitHub",
                 href: "https://github.com/privacy-scaling-explorations/anon-aadhaar",
+              },
+              {
+                label: "Blog",
+                to: "/blog",
               },
             ],
           },

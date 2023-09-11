@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# Extract your certificate from your Aadhaar pdf
+# Extract your certificate
 
 For using the app, you will need your adhaar card in a pdf format, downloaded from an official government portal. You will also need to extract a certificate file (.cer), following those simple steps on Adobe Acrobat Reader:
 

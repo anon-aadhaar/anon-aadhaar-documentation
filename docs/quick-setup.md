@@ -117,7 +117,17 @@ export default function Home() {
 }
 ```
 
-You can find an example app [here](https://github.com/anon-aadhaar-private/anon-aadhaar-example)
+---
+
+# Quick setup video demo
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/3CD0Q-TBN0g?si=Cfv1dR3X3YA2vm5V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+---
+
+# Links
+
+You can find an example app [here](https://github.com/anon-aadhaar-private/quick-setup)
 
 ### Download test files.
 

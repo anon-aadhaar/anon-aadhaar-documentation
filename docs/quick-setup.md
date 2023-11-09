@@ -129,9 +129,16 @@ export default function Home() {
 
 You can find an example app [here](https://github.com/anon-aadhaar-private/quick-setup)
 
-### Download test files.
+### Download test files
 
 To test the proof generation and authentication flow, you can download these files:
 
-- [Signed pdf](/signed.pdf)
+#### With certificate
+
+- [Signed pdf](/signedPDFWithoutPwd.pdf)
 - [Certificate file](/certificate.cer)
+
+#### Without certificate
+
+- [Signed pdf](/signed.pdf)
+- Password: **test123**

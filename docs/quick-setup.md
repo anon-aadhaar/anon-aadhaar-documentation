@@ -18,11 +18,19 @@ with yarn
 yarn add anon-aadhaar-react
 ```
 
-## Add the AnonAadhaar Provider
-
-At the root of your app add the AnonAadhaar Provider:
+To use the library you'll need to generate an application ID, you can generate it by running this script.
 
 ```javascript
+import crypto from "crypto";
+
+const app_id = BigInt(parseInt(crypto.randomBytes(20).toString("hex"), 16)); // random value.
+```
+
+## Add the AnonAadhaar Provider
+
+At the root of your app add the AnonAadhaar Provider and initialize it with your app ID:
+
+```tsx
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { AnonAadhaarProvider } from "anon-aadhaar-react";
@@ -30,7 +38,7 @@ import { AnonAadhaarProvider } from "anon-aadhaar-react";
 export default function App({ Component, pageProps }: AppProps) {
   return (
     // Add the Country Identity Provider at the root of your app
-    <AnonAadhaarProvider>
+    <AnonAadhaarProvider _appId={app_id}>
       <Component {...pageProps} />
     </AnonAadhaarProvider>
   );
@@ -41,7 +49,7 @@ Now you can use the anon aadhaar hook
 
 ## use AnonAadhaar
 
-```js
+```tsx
 import { useAnonAadhaar } from "anon-aadhaar-react";
 
 // Use the Country Identity hook to get the status of the user.

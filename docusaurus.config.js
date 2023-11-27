@@ -6,7 +6,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Anon Aadhaar Documentation",
+  title: "Anon Aadhaar",
   tagline: "Anon Aadhaar documentation website",
   favicon: "img/anonAadhaarLogo.png",
 

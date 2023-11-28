@@ -4,36 +4,49 @@ sidebar_position: 1
 
 # How Does It Work?
 
-Quick overview of the proof generation process:
+## Anon Aadhaar: Verifying Aadhaar Documents with RSA
 
-- Extract information from a PDF.
-- Verify the signature and hash.
-- Input the App ID and PDF data.
-- Generate a proof of signature.
+### Introduction
 
----
+Anon Aadhaar is a zero-knowledge protocol designed to enable Aadhaar citizens to prove their possession of an Aadhaar document issued and signed by the government. This process ensures anonymity by utilizing a masked eAadhaar, preserving the confidentiality of the Aadhaar number.
 
-Anon Aadhaar is a zero-knowledge protocol allowing any Aadhaar citizen to prove they possess an Aadhaar issued and signed by the government. To create proof, only a masked eAadhaar is required, preserving your Aadhaar number.
+### Workflow
 
-### What Data Do We Need to Generate a Proof?
+#### RSA and Document Verification
 
-- The hash of the PDF, as it is the data signed by the government.
-- The signature, necessary for validating its authenticity from the government.
+At the core of this verification process lies RSA, a powerful cryptographic algorithm. RSA involves a private key used for signing and a corresponding public key used for verification of signatures.
 
-External to the PDF:
+1. **Document Data Extraction**:
 
-- The Indian government RSA public key.
-- An application ID.
+   - Extract relevant information from the PDF, including its hash and signature.
+   - Verify the signature's authenticity, ensuring the document's integrity.
 
-We've developed a component named `extractWitness`. This component takes the PDF and its password as inputs. Its functionalities are outlined below:
+2. **`extractWitness` Component**:
 
-- Retrieve the PDF's signature and signed data.
-- Check the validity of the signature certificate and obtain the Issuer's public key.
-- Recalculate the PDF's hash and validate the signature.
-- Provide the hash of the PDF and the signature.
+   - Takes the PDF and its password as inputs.
+   - Validates the signature certificate and retrieves the Issuer's public key.
+   - Recalculates the PDF's hash and validates the signature, providing essential data—PDF hash and signature.
 
-Once we've gathered the required information, we proceed to generate a witness for the prover.
+3. **Generating Proof with RSA**:
+   - Combine the PDF hash, signature, RSA public key and application ID.
+   - The application ID acts as a unique factor, hashed alongside the signature, creating a distinctive identifier.
+   - This identifier prevents duplication or misuse of the proof by users.
 
-For this stage, additional information needs to be passed—namely, the application ID and the Indian government's public key. The application ID aids in neutralizing the proof of identity, preventing users from duplicating their proof. It will be hashed alongside the signature, resulting in a unique identifier. This allows consumer applications to nullify a proof presented by a specific user.
+### Required Data for Proof Generation
+
+To generate a proof, the following information is necessary:
+
+- **From the PDF**:
+  - PDF hash (data signed by the government).
+  - Signature for validating authenticity.
+- **External to the PDF**:
+  - Indian government's RSA public key.
+  - Application ID for neutralizing proof of identity.
 
 ![Alt text](./img/proving_flow.png)
+
+### Zero-Knowledge Aspect
+
+The zero-knowledge aspect of Anon Aadhaar ensures that while proving possession of a valid Aadhaar document, no sensitive information, is disclosed during the verification process. This safeguard enhances user privacy and security.
+
+In summary, Anon Aadhaar leverages RSA's private key for signing and its corresponding public key for signature verification, ensuring anonymity and security for citizens without revealing sensitive information.

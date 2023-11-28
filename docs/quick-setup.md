@@ -125,11 +125,11 @@ export default function Home() {
 }
 ```
 
----
+<!-- ---
 
 # Quick setup video demo
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/3CD0Q-TBN0g?si=Cfv1dR3X3YA2vm5V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/3CD0Q-TBN0g?si=Cfv1dR3X3YA2vm5V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
 
 ---
 
@@ -140,13 +140,6 @@ You can find an example app [here](https://github.com/anon-aadhaar-private/quick
 ### Download test files
 
 To test the proof generation and authentication flow, you can download these files:
-
-#### With certificate
-
-- [Signed pdf](/signedPDFWithoutPwd.pdf)
-- [Certificate file](/certificate.cer)
-
-#### Without certificate
 
 - [Signed pdf](/signed.pdf)
 - Password: **test123**

@@ -49,7 +49,7 @@ To generate a proof, the following information is necessary:
 
 The zero-knowledge aspect of Anon Aadhaar ensures that while proving possession of a valid Aadhaar document, no sensitive information, is disclosed during the verification process. This safeguard enhances user privacy and security.
 
-In summary, Anon Aadhaar leverages RSA's private key for signing and its corresponding public key for signature verification, ensuring anonymity and security for citizens without revealing sensitive information.
+In summary, Anon Aadhaar leverages RSA's public key for signature verification, ensuring anonymity and security for citizens without revealing sensitive information.
 
 ### Anon Aadhaar PCD Proof
 
@@ -60,7 +60,7 @@ The Anon Aadhaar [PCD](https://github.com/proofcarryingdata/zupass#proof-carryin
   - `modulus`: Represents the modulus of the claim, which is a cryptographic value (e.g., "26978..").
 - **proof**:
   - `modulus`: This field contains the modulus related to the proof, likely an RSA public key of the signer (e.g., "2697...").
-  - `nullifier`: Represents the nullifier, the output of a circuit hash(pdf_hash, appId) (e.g., "984...").
+  - `nullifier`: Represents the output of a circuit hash(pdf_hash, appId), it can be used to nullify a proof, it will remain the same for the same Aadhaar card (e.g., "984...").
   - `app_id`: The ID of the application that generated the proof (e.g., "609..").
   - `proof`: This field contains the groth16 proof itself.
 

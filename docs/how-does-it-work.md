@@ -53,7 +53,7 @@ In summary, Anon Aadhaar leverages RSA's public key for signature verification, 
 
 ### Anon Aadhaar PCD Proof
 
-The Anon Aadhaar [PCD](https://github.com/proofcarryingdata/zupass#proof-carrying-data) (Proof-carrying data) format for 0xParc is utilized to encapsulate and store the proofs. Below is the detailed specification of the JSON structure for Anon Aadhaar PCD proof:
+The Anon Aadhaar proof is a [PCD](https://github.com/proofcarryingdata/zupass#proof-carrying-data) (Proof-carrying data). The PCD format from 0xParc is utilized to encapsulate and store the proofs. Below is the detailed specification of the JSON structure for Anon Aadhaar PCD proof:
 
 - **type**: `anon-aadhaar-pcd`
 - **claim**:

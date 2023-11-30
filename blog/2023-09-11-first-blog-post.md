@@ -29,12 +29,17 @@ Before you begin, make sure you have the following:
 
 ## Table of Contents
 
-1. [Create your Next.js app](#1.-create-your-next.js-app)
-2. [Integrate the AnonAadhaar react components library](#integrate-the-anonaadhaar-react-components-library)
-3. [Connect a wallet](#connect-a-wallet)
-4. [Create our voting smart contract](#create-our-voting-smart-contract)
-5. [Calling the voting smart contract from our frontend](#calling-the-voting-smart-contract-from-our-frontend)
-6. [Conclusion](#conclusion)
+- [Building a Voting App with Anon Aadhaar Integration](#building-a-voting-app-with-anon-aadhaar-integration)
+  - [Introduction](#introduction)
+    - [Target Audience](#target-audience)
+    - [Prerequisites](#prerequisites)
+  - [Table of Contents](#table-of-contents)
+  - [Create your Next.js app](#create-your-nextjs-app)
+  - [Integrate the AnonAadhaar React Components Library](#integrate-the-anonaadhaar-react-components-library)
+  - [Connect a wallet](#connect-a-wallet)
+  - [Create our voting smart contract](#create-our-voting-smart-contract)
+  - [Calling the voting smart contract from our frontend](#calling-the-voting-smart-contract-from-our-frontend)
+  - [Conclusion](#conclusion)
 
 ## Create your Next.js app
 
@@ -53,6 +58,22 @@ Next, we'll integrate the AnonAadhaar React Components Library into our Next.js 
 yarn add anon-aadhaar-react
 ```
 
+Generate you application ID by running this script:
+
+```typescript
+import crypto from "crypto";
+
+const app_id = BigInt(
+  parseInt(crypto.randomBytes(20).toString("hex"), 16)
+).toString(); // random value.
+```
+
+Add this in your `.env.local` file.
+
+```bash
+NEXT_PUBLIC_APP_ID="your-app-id"
+```
+
 At the root of your app add the AnonAadhaar Provider, in \_app.tsx file:
 
 ```jsx
@@ -60,10 +81,12 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { AnonAadhaarProvider } from "anon-aadhaar-react";
 
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <AnonAadhaarProvider>
-      <Component {...pageProps} />
+      <Component {...pageProps} _appId={appId} />
     </AnonAadhaarProvider>
   );
 }
@@ -126,9 +149,9 @@ const nextConfig = {
 module.exports = nextConfig;
 ```
 
-At this stage, you should be able to log in a user based on his Aadhaar card. If you don’t have an Aadhaar card but you still want to test is you can download test documents at the end of this page.
+At this stage, you should be able to log-in a user based on his Aadhaar card. If you don’t have an Aadhaar card but you still want to test is you can download test documents at the end of this page.
 
-IMAGES HERE
+![Login component](./loginComponent.png)
 
 ## Connect a wallet
 
@@ -160,6 +183,7 @@ import { Web3Modal } from "@web3modal/react";
 
 const chains = [goerli];
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID || "";
+const appId = process.env.NEXT_PUBLIC_APP_ID || "";
 
 const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiConfig = createConfig({
@@ -173,7 +197,7 @@ const ethereumClient = new EthereumClient(wagmiConfig, chains);
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
-      <AnonAadhaarProvider>
+      <AnonAadhaarProvider _appId={appId}>
         {/* ... (Previous code) */}
         <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
       </AnonAadhaarProvider>
@@ -230,15 +254,83 @@ const config: HardhatUserConfig = {
 export default config;
 ```
 
-Now, let's build our voting contract.
+Now, let's build our voting contract, but first we need to initiate a Verifier.
+
+In `contracts/contracts/AnonAadhaarVerifier.sol`:
+
+```js
+//SPDX-License-Identifier: Unlicense
+pragma solidity ^0.8.4;
+
+import "../interfaces/IAnonAadhaarVerifier.sol";
+
+contract AnonAadhaarVerifier {
+    address public verifierAddr;
+    uint256 public appId;
+
+    uint256 public SNARK_SCALAR_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+
+    // Test PDF public key
+    uint[32] public ISSUER_MODULUS = [ 14802194023203656093, 2804169383069916853, 496991132330559339, 2044134272263249048, 9625896386217978454, 10967403457044780298, 9775317524806066771, 5561505371079494480, 10560300512109825190, 16129190325487635890, 18001156251078908687, 461092412729958323, 6331149421243581141, 11783897075401707273, 15565812337639205350, 523229610772846347, 17536660578867199836, 7115144006388206192, 9426479877521167481, 916998618954199186, 16523613292178382716, 1357861234386200203, 2235444405695526401, 12616767850953148350, 2427846810430325147, 4335594182981949182, 841809897173675580, 8675485891104175248, 7117022419685452177, 14807249288786766117, 12897977216031951370, 15399447716523847189];
+
+    constructor(address _verifierAddr, uint256 _appId) {
+        require(_appId < SNARK_SCALAR_FIELD, "AnonAadhaarVerifier: group id must be < SNARK_SCALAR_FIELD");
+        appId = _appId;
+        verifierAddr = _verifierAddr;
+    }
+
+    function verifyModulus(uint[] memory _inputModulus) private view returns (bool) {
+        bool isValid = true;
+        for (uint i = 0; i < 32; i++) {
+            if (_inputModulus[i] != ISSUER_MODULUS[i]) isValid = false;
+        }
+        return isValid;
+    }
+
+    function slice(uint256[34] memory data, uint256 start) private pure returns (uint256[] memory) {
+        uint256[] memory sliced = new uint256[](32);
+
+        for (uint256 i = 0; i < 32; i++) {
+            sliced[i] = data[start + i];
+        }
+
+        return sliced;
+    }
+
+    function verifyProof(
+        uint[2] calldata a,
+        uint[2][2] calldata b,
+        uint[2] calldata c,
+        uint[34] calldata input
+    ) public view returns (bool) {
+        require(input[input.length - 1] == appId, "AnonAadhaarVerifier: wrong app ID");
+        uint256[] memory inputModulus = slice(input, 1);
+        require(verifyModulus(inputModulus) == true, "AnonAadhaarVerifier: wrong issuer public key");
+        return IAnonAadhaarVerifier(verifierAddr).verifyProof(a, b, c, input);
+    }
+}
+```
+
+Let me describe what's happening here:
+
+```js
+require(_appId <
+  SNARK_SCALAR_FIELD, "AnonAadhaarVerifier: group id must be < SNARK_SCALAR_FIELD");
+```
+
+Here it's a trick to ensure security, to ensure that the app in under the scalar field.
+
+We need to hardcode the `modulus` and the appId, the modulus is the RSA public key corresponding to the RSA private key that have signed the document. Here we want to ensure that the public key that signed the message and outputted by the proof is the right one, ontherwise any RSA signature would be verified. It's the same logic for the appId you want to ensure that the appId is the one corresponding to your app.
+
+Also here we're implemting the testing version so the modulus and the appId are the testing ones, you can check the comments in the [example repo](https://github.com/anon-aadhaar-private/anon-aadhaar-example) to set the official key.
 
 In `contracts/contracts/Vote.sol`:
 
-```solidity
+```js
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.7.0 <0.9.0;
 
-import "hardhat/console.sol";
+import "../interfaces/IAnonAadhaarVerifier.sol";
 
 contract Vote {
     // Structure to hold proposal information
@@ -247,7 +339,7 @@ contract Vote {
         uint256 voteCount;
     }
     string public votingQuestion;
-    address public verifierAddr;
+    address public anonAadhaarVerifierAddr;
 
     event Voted(address indexed _from, uint256 indexed _propositionIndex);
 
@@ -256,116 +348,25 @@ contract Vote {
 
     // Mapping to track if an address has already voted
     mapping(address => bool) public hasVoted;
+    // This can be replaced by the nullifier
+    // Nullifier can be accessed by calling _pubSignals[0]
+    // mapping(uint256 => bool) public hasVoted;
 
     // Constructor to initialize proposals
     constructor(string memory _votingQuestion, string[] memory proposalDescriptions, address _verifierAddr) {
-        verifierAddr = _verifierAddr;
+        anonAadhaarVerifierAddr = _verifierAddr;
         votingQuestion = _votingQuestion;
         for (uint256 i = 0; i < proposalDescriptions.length; i++) {
             proposals.push(Proposal(proposalDescriptions[i], 0));
         }
     }
 
-    // Function to vote for a proposal
-    function voteForProposal(uint256 proposalIndex) public {
-        require(proposalIndex < proposals.length, "Invalid proposal index");
-        require(!hasVoted[msg.sender], "You have already voted");
-
-        proposals[proposalIndex].voteCount++;
-        hasVoted[msg.sender] = true;
-
-        emit Voted(msg.sender, proposalIndex);
-    }
-
-    // Function to get the total number of proposals
-    function getProposalCount() public view returns (uint256) {
-        return proposals.length;
-    }
-
-    // Function to get proposal information by index
-    function getProposal(uint256 proposalIndex) public view returns (string memory, uint256) {
-        require(proposalIndex < proposals.length, "Invalid proposal index");
-
-        Proposal memory proposal = proposals[proposalIndex];
-        return (proposal.description, proposal.voteCount);
-    }
-}
-```
-
-This is a straightforward sample voting smart contract. However, let's delve into how we integrated the Verifier to verify our proof. To begin, we need to establish an interface for calling the verifyProof() function of our Verifier.sol contract.
-
-Create an interface for the Verifier:
-
-```solidity
-interface IVerifier {
-    function verifyProof(
-        uint256[2] memory a,
-        uint256[2][2] memory b,
-        uint256[2] memory c,
-        uint256[32] memory input
-    ) external view returns (bool);
-}
-```
-
-And use it to create our verify function:
-
-```solidity
-function verify(uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[32] calldata _pubSignals) public view returns (bool) {
-	return IVerifier(verifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
-}
-```
-
-Now, our voting smart contract is ready to check users' proof of Aadhaar identity before allowing them to vote.
-
-Final `Vote.sol` contract:
-
-```solidity
-// SPDX-License-Identifier: GPL-3.0
-pragma solidity >=0.7.0 <0.9.0;
-
-import "hardhat/console.sol";
-
-interface IVerifier {
-    function verifyProof(
-        uint256[2] memory a,
-        uint256[2][2] memory b,
-        uint256[2] memory c,
-        uint256[32] memory input
-    ) external view returns (bool);
-}
-
-contract Vote {
-    // Structure to hold proposal information
-    struct Proposal {
-        string description;
-        uint256 voteCount;
-    }
-    string public votingQuestion;
-    address public verifierAddr;
-
-    event Voted(address indexed _from, uint256 indexed _propositionIndex);
-
-    // List of proposals
-    Proposal[] public proposals;
-
-    // Mapping to track if an address has already voted
-    mapping(address => bool) public hasVoted;
-
-    // Constructor to initialize proposals
-    constructor(string memory _votingQuestion, string[] memory proposalDescriptions, address _verifierAddr) {
-        verifierAddr = _verifierAddr;
-        votingQuestion = _votingQuestion;
-        for (uint256 i = 0; i < proposalDescriptions.length; i++) {
-            proposals.push(Proposal(proposalDescriptions[i], 0));
-        }
-    }
-
-    function verify(uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[32] calldata _pubSignals) public view returns (bool) {
-        return IVerifier(verifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
+    function verify(uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public view returns (bool) {
+        return IAnonAadhaarVerifier(anonAadhaarVerifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
     }
 
     // Function to vote for a proposal
-    function voteForProposal(uint256 proposalIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[32] calldata _pubSignals) public {
+    function voteForProposal(uint256 proposalIndex, uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public {
         require(proposalIndex < proposals.length, "Invalid proposal index");
         require(!hasVoted[msg.sender], "You have already voted");
         require(verify(_pA, _pB, _pC, _pubSignals), "Your idendity proof is not valid");
@@ -388,8 +389,45 @@ contract Vote {
         Proposal memory proposal = proposals[proposalIndex];
         return (proposal.description, proposal.voteCount);
     }
+
+    // Function to get the total number of votes across all proposals
+    function getTotalVotes() public view returns (uint256) {
+        uint256 totalVotes = 0;
+        for (uint256 i = 0; i < proposals.length; i++) {
+            totalVotes += proposals[i].voteCount;
+        }
+        return totalVotes;
+    }
+
+    // Function to check if a user has already voted
+    function checkVoted(address _addr) public view returns (bool) {
+        return hasVoted[_addr];
+    }
+}
+
+```
+
+This is a straightforward sample voting smart contract. However, let's delve into how we integrated the Verifier to verify our proof. To begin, we need to establish an interface for calling the verifyProof() function of our Verifier.sol contract.
+
+Create an interface for the Verifier in `contracts/interfaces/IAnonAadhaarVerifier.sol`:
+
+```js
+interface IAnonAadhaarVerifier {
+    function verifyProof(
+        uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals
+    ) external view returns (bool);
 }
 ```
+
+And we use it to create our verify function:
+
+```js
+    function verify(uint256[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[34] calldata _pubSignals) public view returns (bool) {
+        return IAnonAadhaarVerifier(anonAadhaarVerifierAddr).verifyProof(_pA, _pB, _pC, _pubSignals);
+    }
+```
+
+Now, our voting smart contract is ready to check users' proof of Aadhaar identity before allowing them to vote.
 
 Before deploying it, we need to add a private key and update the `deploy.ts` script.
 
@@ -433,10 +471,22 @@ async function main() {
   const verifier = await ethers.deployContract("Verifier");
   await verifier.waitForDeployment();
 
+  const _verifierAddress = verifier.getAddress();
+
+  const appId = BigInt("your-app-id").toString();
+
+  const anonAadhaarVerifier = await ethers.deployContract(
+    "AnonAadhaarVerifier",
+    [_verifierAddress, appId]
+  );
+  await anonAadhaarVerifier.waitForDeployment();
+
+  const _anonAadhaarVerifierAddress = verifier.getAddress();
+
   const vote = await ethers.deployContract("Vote", [
     "Do you like this app?",
     ["0", "1", "2", "3", "4", "5"],
-    verifier.getAddress(),
+    _anonAadhaarVerifierAddress,
   ]);
 
   await vote.waitForDeployment();
@@ -482,20 +532,28 @@ const { data, isLoading, isSuccess, write } = useContractWrite({
 
 3. Create the sendVote() function:
 
+First you'll need to query the user pcd proof:
+
 ```jsx
-const sendVote = async (
-  rating: string,
-  _pcdProof: SnarkJSProof,
-  _pcdMod: BigNumberish
-) => {
-  const { a, b, c, Input } = await exportCallDataGroth16(_pcdProof, _pcdMod);
+const [pcd, setPcd] = useState<AnonAadhaarPCD>();
+
+useEffect(() => {
+  if (anonAadhaar.status === "logged-in") setPcd(anonAadhaar.pcd);
+}, [anonAadhaar]);
+```
+
+```jsx
+import { AnonAadhaarPCD, exportCallDataGroth16FromPCD } from "anon-aadhaar-pcd";
+
+const sendVote = async (rating: string, _pcd: AnonAadhaarPCD) => {
+  const { a, b, c, Input } = await exportCallDataGroth16FromPCD(_pcd);
   write({
     args: [rating, a, b, c, Input],
   });
 };
 ```
 
-4. Implement the vote button in your UI:
+1. Implement the vote button in your UI:
 
 ```jsx
 <button
@@ -503,64 +561,13 @@ const sendVote = async (
   type="button"
   className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
   onClick={() => {
-    if (rating !== undefined && pcd !== undefined)
-      sendVote(rating, pcd.proof.proof, pcd.proof.modulus);
+    if (rating !== undefined && pcd !== undefined) sendVote(rating, pcd);
   }}
 >
   Vote
 </button>
 ```
 
-Here is the final result:
-
-```jsx
-import {
-  AnonAadhaarPCD,
-  SnarkJSProof,
-  exportCallDataGroth16,
-  BigNumberish,
-} from "anon-aadhaar-pcd";
-import { useAccount, useContractWrite } from "wagmi";
-import voteABI from "../../public/Vote.json";
-import { useEffect, useState } from "react";
-
-export default function Vote() {
-const [pcd, setPcd] = useState<AnonAadhaarPCD>();
-const { data, isLoading, isSuccess, write } = useContractWrite({
-    address: `0x${process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || ""}`,
-    abi: voteABI.abi,
-    functionName: "voteForProposal",
-  });
-	const sendVote = async (
-	    rating: string,
-	    _pcdProof: SnarkJSProof,
-	    _pcdMod: BigNumberish
-	  ) => {
-	    const { a, b, c, Input } = await exportCallDataGroth16(_pcdProof, _pcdMod);
-	    write({
-	      args: [rating, a, b, c, Input],
-	    });
-	  };
-
-	useEffect(() => {
-	    if (anonAadhaar.status === "logged-in") setPcd(anonAadhaar.pcd);
-	  }, [anonAadhaar]);
-
-	return(
-	<button
-         disabled={rating === undefined || pcd === undefined}
-         type="button"
-         className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-         onClick={() => {
-	         if (rating !== undefined && pcd !== undefined)
-	           sendVote(rating, pcd.proof.proof, pcd.proof.modulus);
-           }}
-      >
-      Vote
-        </button>
-)}
-```
-
 ## Conclusion
 
-In this tutorial, we've covered the process of creating a voting application with Anon Aadhaar integration. You can check an exemple app [here](https://github.com/anon-aadhaar-private/anon-aadhaar-example)
+In this tutorial, we've covered the process of creating a voting application with Anon Aadhaar integration. You can check an exemple app [here](https://github.com/anon-aadhaar-private/anon-aadhaar-example). Fork it and play around :D.

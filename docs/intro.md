@@ -27,6 +27,8 @@ With anon aadhaar, you can do the following:
 The Anon Aadhaar protocol is built arount a circuit that take the RSA signature contained in the Aadhaar pdf and verifies that it was issued by the Indian government public key. Anon Aadhaar is using the PCD framework to handle proofs, that makes it very easy to use them.
 In addition to the circuit, Anon Aadhaar provides a Solidity Verifier contract and a react library that allow developers to authenticate users based on generated and verified zero-knowledge proofs with minimal effort.
 
+> ⚠️ **IMPORTANT NOTE:** Anon Aadhaar is still under development and should not be used in production. The current protocol hides your identity from all parties except the Issuer of your Aadhaar. Please consider this when working with Anon Aadhaar proof.
+
 ### Links
 
 - [Anon Aadhaar repo](https://github.com/privacy-scaling-explorations/anon-aadhaar)

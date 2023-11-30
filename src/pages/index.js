@@ -6,21 +6,30 @@ import Layout from "@theme/Layout";
 import HomepageFeatures from "@site/src/components/HomepageFeatures";
 
 import styles from "./index.module.css";
+import heroBannerImage from "../../static/img/heroBanner.png";
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <header className={clsx("hero hero--primary", styles.heroBanner)}>
+    <header
+      className={clsx("hero hero--primary", styles.heroBanner)}
+      style={{
+        backgroundImage: `url(${heroBannerImage})`,
+        backgroundSize: "cover",
+      }}
+    >
       <div className="container">
-        <h1 className="hero__title">{siteConfig.title}</h1>
-        <p className="hero__subtitle">{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
-          <Link
-            className="button button--secondary button--lg"
-            to="/docs/quick-setup"
-          >
-            Anon Aadhaar Tutorial - 5min ⏱️
-          </Link>
+        <div className={styles.textOverlay}>
+          <h1 className="hero__title">{siteConfig.title}</h1>
+          <p className="hero__subtitle">{siteConfig.tagline}</p>
+          <div className={styles.buttons}>
+            <Link
+              className="button button--secondary button--lg"
+              to="/docs/quick-setup"
+            >
+              Anon Aadhaar Tutorial - 5min ⏱️
+            </Link>
+          </div>
         </div>
       </div>
     </header>

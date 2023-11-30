@@ -7,7 +7,7 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "Anon Aadhaar",
-  tagline: "Anon Aadhaar documentation website",
+  tagline: "Anon Aadhaar documentation",
   favicon: "img/anonAadhaarLogo.png",
 
   // Set the production url of your site here
@@ -72,12 +72,22 @@ const config = {
             type: "docSidebar",
             sidebarId: "tutorialSidebar",
             position: "left",
-            label: "Tutorial",
+            label: "Documentation",
           },
           { to: "/blog", label: "Blog", position: "left" },
           {
             href: "https://github.com/privacy-scaling-explorations/anon-aadhaar",
             label: "GitHub",
+            position: "right",
+          },
+          {
+            href: "https://twitter.com/AnonAadhaar",
+            label: "Twitter",
+            position: "right",
+          },
+          {
+            href: "https://t.me/anon_aadhaar",
+            label: "Telegram",
             position: "right",
           },
         ],
@@ -97,17 +107,14 @@ const config = {
           {
             title: "Community",
             items: [
-              // {
-              //   label: "Stack Overflow",
-              //   href: "https://stackoverflow.com/questions/tagged/docusaurus",
-              // },
-              // {
-              //   label: "Discord",
-              //   href: "https://discordapp.com/invite/docusaurus",
-              // },
               {
                 label: "Twitter",
-                href: "https://twitter.com/PrivacyScaling",
+                href: "https://twitter.com/AnonAadhaar",
+              },
+              {
+                href: "https://t.me/anon_aadhaar",
+                label: "Telegram",
+                position: "right",
               },
             ],
           },

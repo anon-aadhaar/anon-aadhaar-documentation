@@ -23,7 +23,7 @@ To use the library you'll need to generate an application ID, you can generate i
 ```javascript
 import crypto from "crypto";
 
-const app_id = BigInt(parseInt(crypto.randomBytes(20).toString("hex"), 16)); // random value.
+const app_id = BigInt(parseInt(crypto.randomBytes(20).toString("hex"), 16)).toString(); // random string.
 ```
 
 ## Add the AnonAadhaar Provider

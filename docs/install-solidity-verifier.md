@@ -4,6 +4,8 @@ sidebar_position: 3
 
 # Install the Solidity verifier
 
+> ⚠️ **IMPORTANT NOTE:** The existing protocol provides anonymity to users, shielding their identities from all entities except the Issuer of the Aadhaar ID card. It's crucial to be aware that the Issuer retains the capability to deanonymize users. Hence, exercise caution when handling proofs. While users remain anonymous to all but the Issuer, this unique aspect should be carefully considered when thinking of posting Anon Aadhaar proof on-chain.
+
 Below, we'll demonstrate how to seamlessly integrate the Anon Aadhaar Solidity Verifier using Hardhat. This integration empowers you to verify Anon Aadhaar proofs directly on the blockchain. Here's how:
 
 1. Create a contracts folder at the root of your app, and initialize Hardhat:

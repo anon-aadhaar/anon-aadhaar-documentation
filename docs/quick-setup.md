@@ -164,6 +164,29 @@ export default function Home() {
 
 ---
 
+## Run Anon Aadhaar on localhost mode
+
+This enables you to run the proving flow without having to each time fetch zk artifacts from AWS, as it be quite long in case of a low internet speed.
+In order to do that you'll download the zk artifacts on you computer, and add them under your public file at the root of your app.
+
+Here are the links to download the files, just click the links and it will download the files:
+
+- main.wasm: https://d3dxq5smiosdl4.cloudfront.net/main.wasm
+- circuit_final.zkey: https://d3dxq5smiosdl4.cloudfront.net/circuit_final.zkey
+- verification_key.json: https://d3dxq5smiosdl4.cloudfront.net/verification_key.json
+
+Make sure you file as the same name and are at the same place in your `public` folder
+
+![Alt text](./img/localhost_tree.png)
+
+Then you'll pass the `_isWeb={false}` variable to the Provider like so:
+
+```jsx
+<AnonAadhaarProvider _appId={app_id} _isWeb={false}>
+  <Component {...pageProps} />
+</AnonAadhaarProvider>
+```
+
 # Links
 
 You can find an example app [here](https://github.com/anon-aadhaar-private/quick-setup)

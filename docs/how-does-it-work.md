@@ -8,62 +8,46 @@ sidebar_position: 1
 
 ### Introduction
 
-Anon Aadhaar is a zero-knowledge protocol designed to enable Aadhaar citizens to prove their possession of an Aadhaar document issued and signed by the government. This process ensures anonymity by utilizing a masked eAadhaar, preserving the confidentiality of the Aadhaar number.
+Anon Aadhaar is a zero-knowledge protocol designed to enable Aadhaar citizens to prove their possession of an Aadhaar document issued and signed by the government. This process ensures anonymity by utilizing the [Aadhaar secure QR code](https://uidai.gov.in/en/ecosystem/authentication-devices-documents/qr-code-reader.html), presents on e-Aadhaar ans Aadhaar print-letter, preserving the confidentiality of the Aadhaar number.
 
 ### Workflow
 
 #### RSA and Document Verification
 
-At the core of this verification process lies RSA, a powerful cryptographic algorithm. RSA involves a private key used for signing and a corresponding public key used for verification of signatures.
+At the core of this verification process lies RSA, a powerful cryptographic signature algorithm. RSA involves a private key used for signing and a corresponding public key used for verification of signatures. The innovative part of the Anon Aadhaar protocol is that this verification happens inside of a circuit, and the process results in a zk SNARK proof, hidding all the personal information needed to verify the signature. Resulting in a proof that attest indetity without revealing it.
 
-1. **Document Data Extraction**:
+Here are the steps happening while generating the proof:
 
-   - Extract relevant information from the PDF, including its hash and signature.
-   - Verify the signature's authenticity, ensuring the document's integrity.
+### 1. **Extract and process the data from the QR code**:
 
-2. **`extractWitness` Component**:
+- Read the QR code and extract both the signature and the signed data as bytes arrays
+- Verifying the signature outside of the circuit to make sure the document is signed
+- Fetching the official UIDAI public key, to use it as circuit input, to ensure it's RSA signed from the right authority
+- Hash the signal
 
-   - Takes the PDF and its password as inputs.
-   - Validates the signature certificate and retrieves the Issuer's public key.
-   - Recalculates the PDF's hash and validates the signature, providing essential data—PDF hash and signature.
+##### Required Data to generate the Aadhaar proof
 
-3. **Generating Proof with RSA**:
-   - Combine the PDF hash, signature, RSA public key and application ID.
-   - The application ID acts as a unique factor, hashed alongside the signature, creating a distinctive identifier.
-   - This identifier prevents duplication or misuse of the proof by users.
+- **From the QR Code**:
+  - Bytes of the signed data.
+  - Bytes of the RSA signature.
+- **External to the QR Code**:
+  - Indian government's RSA public key (that can be found [here](https://www.uidai.gov.in/en/916-developer-section/data-and-downloads-section/11349-uidai-certificate-details.html)).
+  - A signal.
 
-### Required Data for Proof Generation
+### 2. **Generate an Anon-Aadhaar Proof**:
 
-To generate a proof, the following information is necessary:
+This process involves several operations in Circom circuits to ensure the privacy and integrity of your Aadhaar data while proving its authenticity without revealing personal information:
 
-- **From the PDF**:
-  - PDF hash (data signed by the government).
-  - Signature for validating authenticity.
-- **External to the PDF**:
-  - Indian government's RSA public key.
-  - Application ID for neutralizing proof of identity.
+- **Apply the SHA-256 on the Signed Data**: This step involves checking the integrity and authenticity of the signed data by verifying its SHA-256 hash, as it's the hash that is signed by the RSA algorthm.
+
+- **Verify the RSA Signature of the Hashed Data**: After verifying the data's hash, the next step is to authenticate the source of the data by verifying the RSA signature. This ensures that the data and its hash were indeed signed by the holder of the private key, in this case the UIDAI, offering a layer of security against data tampering.
+
+- **Extract Identity Fields from the Signed Data**: Specific identity-related fields are extracted from the data (last 4 digits of the Aadhaar number, name, dob, gender, pin code, timestamp, photo)
+
+- **Compute Nullifiers**: Nullifiers are unique identifiers derived from data fields, used to prevent double-spending or duplicate proofs without revealing the actual data. This step is crucial for maintaining privacy while ensuring the uniqueness and validity of the proof. To read more about Nullifiers.
+
+- **Convert Timestamp from IST to UNIX UTC Format**: The timestamp associated with the data is converted into a UNIX UTC format. This standardization of time representation ensures consistency across different systems and platforms, facilitating verification processes that require time validation.
+
+- **"Signing" the SignalHash**: The final step involves applying a contraints on the signalHash as part of the proof generation process. This act as a marker to the proof, that let the user to commit to a certain signal, while generating the proof. Note, that it's an optionnal parameter and it will be set as 1 by default in the SDK, it's mainly used to prevent from on-chain front-running or ERC-4337 integration.
 
 ![Alt text](./img/proving_flow.png)
-
-### Zero-Knowledge Aspect
-
-The zero-knowledge aspect of Anon Aadhaar ensures that while proving possession of a valid Aadhaar document, no sensitive information, is disclosed during the verification process. This safeguard enhances user privacy and security.
-
-In summary, Anon Aadhaar leverages RSA's public key for signature verification, ensuring anonymity and security for citizens without revealing sensitive information.
-
-### Anon Aadhaar PCD Proof
-
-The Anon Aadhaar proof is a [PCD](https://github.com/proofcarryingdata/zupass#proof-carrying-data) (Proof-carrying data). The PCD format, from 0xParc, is utilized to encapsulate and store the proofs. Below is the detailed specification of the JSON structure for Anon Aadhaar PCD proof:
-
-- **type**: `anon-aadhaar-pcd`
-- **claim**:
-  - `modulus`: This field contains the modulus related to the proof, likely an RSA public key of the signer (e.g., "2697...").
-- **proof**:
-  - `modulus`: Should be the same as the claim modulus.
-  - `nullifier`: Represents the output of a circuit hash(pdf_hash, appId), it can be used to nullify a proof, it will remain the same for the same Aadhaar card (e.g., "984...").
-  - `app_id`: The ID of the application that generated the proof (e.g., "609..").
-  - `proof`: This field contains the groth16 proof itself.
-
-Please note:
-
-- `id`: Not relevant and should not be used for any operations.

@@ -4,60 +4,23 @@ sidebar_position: 2
 
 # Quick setup
 
-## Install the `anon-aadhaar-react` package
+## Install the `@anon-aadhaar/react` package
 
 with npm
 
 ```javascript
-npm install anon-aadhaar-react
+npm install @anon-aadhaar/react
 ```
 
 with yarn
 
 ```javascript
-yarn add anon-aadhaar-react
-```
-
-To use the library you'll need to generate an application ID, you can generate it by running this script once and store your unique app_id.
-
-```javascript
-import crypto from "crypto";
-
-const app_id = BigInt(
-  parseInt(crypto.randomBytes(20).toString("hex"), 16)
-).toString(); // random value.
-```
-
-You can add it to your app as an env variable for example, by adding a `.env.local` file at the root of your app with the following value:
-
-```bash
-NEXT_PUBLIC_APP_ID="<the app id you just generated>"
+yarn add @anon-aadhaar/react
 ```
 
 ## Add the AnonAadhaar Provider
 
-At the root of your app add the AnonAadhaar Provider and initialize it with your app ID:
-
-```tsx
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
-import { AnonAadhaarProvider } from "anon-aadhaar-react";
-
-const app_id = process.env.NEXT_PUBLIC_APP_ID || "";
-
-export default function App({ Component, pageProps }: AppProps) {
-  return (
-    // Add the Country Identity Provider at the root of your app
-    <AnonAadhaarProvider _appId={app_id}>
-      <Component {...pageProps} />
-    </AnonAadhaarProvider>
-  );
-}
-```
-
-The SDK is initially configured to validate a simulated test Aadhaar card by default. This means that the verification process relies on the RSA public key (modulus) stored in the PDF certificate to compute the proof. However, because the circuit only verifies the correctness of an RSA signature, it's essential to provide the official Aadhaar card issuer's public key to the circuit. This step ensures that the proof confirms the statement 'I possess a document with a verified RSA signature from the official Aadhaar Issuer.'. Note here that it will also works with your real Aadhaar card, but it will only prove the statement 'I possess a document with a verified RSA signature.'.
-
-For the generation of an accurate Identity proof based on a masked Aadhaar PDF, it's crucial to set the variable \_testing to false when passing it to the provider:
+This needs to be **at the root of your app** add the AnonAadhaar Provider and initialize it with your app ID:
 
 ```tsx
 import "@/styles/globals.css";
@@ -66,36 +29,30 @@ import { AnonAadhaarProvider } from "anon-aadhaar-react";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    // Add the Country Identity Provider at the root of your app
-    <AnonAadhaarProvider _appId={app_id} _testing={false}>
+    <AnonAadhaarProvider>
       <Component {...pageProps} />
     </AnonAadhaarProvider>
   );
 }
 ```
 
-This configuration ensures that the AnonAadhaarProvider is properly set up within your React application, allowing the SDK to perform Aadhaar verification and RSA signature validation accurately by fetching the official public key and use as input to the witness that will be computed to generate the zk proof.
-
-Now you can use the anon aadhaar hook.
-
-## use AnonAadhaar
+The SDK is initially configured to validate a real Aadhaar card by default. You can use test Data by passing `_useTestAadhaar` variable to true.
 
 ```tsx
-import { useAnonAadhaar } from "anon-aadhaar-react";
+import "@/styles/globals.css";
+import type { AppProps } from "next/app";
+import { AnonAadhaarProvider } from "anon-aadhaar-react";
 
-// Use the Country Identity hook to get the status of the user.
-export default function Home() {
-  const [anonAadhaar] = useAnonAadhaar();
-
-  useEffect(() => {
-    console.log("Anon Aadhaar status: ", anonAadhaar.status);
-  }, [anonAadhaar]);
-
-  return <p>{anonAadhaar?.status}</p>;
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <AnonAadhaarProvider _useTestAadhaar={true}>
+      <Component {...pageProps} />
+    </AnonAadhaarProvider>
+  );
 }
 ```
 
-## Add the AnonAadhaar connect button
+## Add the AnonAadhaar connect button and hook
 
 ```js
 import { LogInWithAnonAadhaar, useAnonAadhaar } from "anon-aadhaar-react";
@@ -117,9 +74,9 @@ export default function Home() {
 }
 ```
 
-Now your users can log into your app by generating a PCD ZKP, this button will open a modal and let the user upload his Aadhaar card pdf and its certificate.
+Now your users can log into your app by generating an `anonAadhaarProof`, this button will open a modal and let the user upload his Aadhaar card pdf and its certificate.
 
-Once the user is logged-in you can access and display the proof.
+Once the user is 'logged-in' you can access and display the proof.
 
 ## Display the anon Aadhaar proof
 
@@ -148,19 +105,13 @@ export default function Home() {
       {anonAadhaar?.status === "logged-in" && (
         <>
           <p>✅ Proof is valid</p>
-          <AnonAadhaarProof code={JSON.stringify(anonAadhaar.pcd, null, 2)}/>
+          <AnonAadhaarProof code={JSON.stringify(anonAadhaar.anonAadhaarProof, null, 2)}/>
         </>
         )}
     </div>
   );
 }
 ```
-
-<!-- ---
-
-# Quick setup video demo
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/3CD0Q-TBN0g?si=Cfv1dR3X3YA2vm5V" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
 
 ---
 
@@ -171,29 +122,24 @@ In order to do that you'll download the zk artifacts on you computer, and add th
 
 Here are the links to download the files, just click the links and it will download the files:
 
-- main.wasm: https://d3dxq5smiosdl4.cloudfront.net/main.wasm
-- circuit_final.zkey: https://d3dxq5smiosdl4.cloudfront.net/circuit_final.zkey
-- verification_key.json: https://d3dxq5smiosdl4.cloudfront.net/verification_key.json
+- /aadhaar-verfier.wasm: [test](https://d1l6t78iyuhldt.cloudfront.net/aadhaar-verifier.wasm) | [prod](https://d1re67zv2jtrxt.cloudfront.net/aadhaar-verifier.wasm)
+- /circuit_final.zkey: [test](https://d1l6t78iyuhldt.cloudfront.net/circuit_final.zkey) | [prod](https://d1re67zv2jtrxt.cloudfront.net/circuit_final.zkey)
+- /vkey.json: [test](https://d1l6t78iyuhldt.cloudfront.net/vkey.json) | [prod](https://d1re67zv2jtrxt.cloudfront.net/vkey.json)
 
-Make sure you file as the same name and are at the same place in your `public` folder
+Make sure you file as the **same name as above** and are at the same place in your `public` folder
 
-![Alt text](./img/localhost_tree.png)
-
-Then you'll pass the `_isWeb={false}` variable to the Provider like so:
+Then you'll pass the `_fetchArtifactsFromServer={false}` variable to the Provider like so:
 
 ```jsx
-<AnonAadhaarProvider _appId={app_id} _isWeb={false}>
+<AnonAadhaarProvider _fetchArtifactsFromServer={false}>
   <Component {...pageProps} />
 </AnonAadhaarProvider>
 ```
 
 # Links
 
-You can find an example app [here](https://github.com/anon-aadhaar-private/quick-setup)
+You can find an example app [here](https://github.com/anon-aadhaar/quick-setup)
 
 ### Download test files
 
-To test the proof generation and authentication flow, you can download these files:
-
-- [Signed pdf](/signed.pdf)
-- Password: **test123**
+You can find a test Aadhaar QR code [here](https://uidai.gov.in/en/ecosystem/authentication-devices-documents/qr-code-reader.html).

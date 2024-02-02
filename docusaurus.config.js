@@ -1,6 +1,5 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
-
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
@@ -41,13 +40,11 @@ const config = {
           sidebarPath: require.resolve("./sidebars.js"),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            "https://github.com/privacy-scaling-explorations/anon-aadhaar",
+          editUrl: "https://github.com/anon-aadhaar/anon-aadhaar",
         },
         blog: {
           showReadingTime: true,
-          editUrl:
-            "https://github.com/anon-aadhaar-private/anon-aadhaar-documentation",
+          editUrl: "https://github.com/anon-aadhaar/anon-aadhaar-documentation",
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -76,7 +73,7 @@ const config = {
           },
           { to: "/blog", label: "Blog", position: "left" },
           {
-            href: "https://github.com/privacy-scaling-explorations/anon-aadhaar",
+            href: "https://github.com/anon-aadhaar/anon-aadhaar",
             label: "GitHub",
             position: "right",
           },
@@ -123,7 +120,7 @@ const config = {
             items: [
               {
                 label: "GitHub",
-                href: "https://github.com/privacy-scaling-explorations/anon-aadhaar",
+                href: "https://github.com/anon-aadhaar/anon-aadhaar",
               },
               {
                 label: "Blog",

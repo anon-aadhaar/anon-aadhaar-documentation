@@ -30,10 +30,17 @@ const anonAadhaarInitArgs: InitArgs = {
 // Initialize the core package
 await init(anonAadhaarInitArgs);
 
+const nullifierSeed = 1234;
+
 // QRData: the string read from the QR code
 // certificate: x509 certificate containing the public key
 // it can be downloaded from: https://www.uidai.gov.in/en/916-developer-section/data-and-downloads-section/11349-uidai-certificate-details.html
-const args = await generateArgs(QRData, certificate, "any signal value");
+const args = await generateArgs({
+  QRData,
+  certificateFile,
+  signal: "any signal value",
+  nullifierSeed,
+});
 
 const anonAadhaarCore = await prove(args);
 ```

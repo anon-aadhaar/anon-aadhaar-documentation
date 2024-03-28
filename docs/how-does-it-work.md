@@ -8,7 +8,7 @@ sidebar_position: 1
 
 ### Introduction
 
-Anon Aadhaar is a zero-knowledge protocol designed to enable Aadhaar citizens to prove their possession of an Aadhaar document issued and signed by the government. This process ensures anonymity by utilizing the [Aadhaar secure QR code](https://uidai.gov.in/en/ecosystem/authentication-devices-documents/qr-code-reader.html), presents on e-Aadhaar ans Aadhaar print-letter, preserving the confidentiality of the Aadhaar number.
+Anon Aadhaar is a zero-knowledge protocol designed to enable Aadhaar citizens to prove their possession of an Aadhaar document issued and signed by the government. This process ensures anonymity by utilizing the [Aadhaar secure QR code](https://uidai.gov.in/en/ecosystem/authentication-devices-documents/qr-code-reader.html), presents on e-Aadhaar and Aadhaar print-letter, preserving the confidentiality of the Aadhaar number.
 
 ### Workflow
 
@@ -33,6 +33,7 @@ Here are the steps happening while generating the proof:
 - **External to the QR Code**:
   - Indian government's RSA public key (that can be found [here](https://www.uidai.gov.in/en/916-developer-section/data-and-downloads-section/11349-uidai-certificate-details.html)).
   - A signal.
+  - A nullifier Seed
 
 ### 2. **Generate an Anon-Aadhaar Proof**:
 
@@ -42,9 +43,11 @@ This process involves several operations in Circom circuits to ensure the privac
 
 - **Verify the RSA Signature of the Hashed Data**: After verifying the data's hash, the next step is to authenticate the source of the data by verifying the RSA signature. This ensures that the data and its hash were indeed signed by the holder of the private key, in this case the UIDAI, offering a layer of security against data tampering.
 
-- **Extract Identity Fields from the Signed Data**: Specific identity-related fields are extracted from the data (last 4 digits of the Aadhaar number, name, dob, gender, pin code, timestamp, photo)
+- **Extract the photo bytes from the Signed Data**: The bytes of the photo are extracted to compute the nullifier.
 
-- **Compute Nullifiers**: Nullifiers are unique identifiers derived from data fields, used to prevent double-spending or duplicate proofs without revealing the actual data. This step is crucial for maintaining privacy while ensuring the uniqueness and validity of the proof. To read more about Nullifiers.
+- **Extract Identity Fields if requested**: If your app request to reveal one of the field from the identity the circuit will reveal it in its output. There only four fields that could be revealed (Age > 18, Gender, State, Pincode). Note that by default the Prover will reveal nothing from the ID.
+
+- **Compute Nullifiers**: Nullifier is a unique identifiers derived from data fields, used to prevent double-spending or duplicate proofs without revealing the actual data. This step is crucial for maintaining privacy while ensuring the uniqueness and validity of the proof. To read more about Nullifiers.
 
 - **Convert Timestamp from IST to UNIX UTC Format**: The timestamp associated with the data is converted into a UNIX UTC format. This standardization of time representation ensures consistency across different systems and platforms, facilitating verification processes that require time validation.
 

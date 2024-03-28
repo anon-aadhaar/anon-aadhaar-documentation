@@ -26,10 +26,16 @@ const anonAadhaarInitArgs: InitArgs = {
 // Initialize the core package
 await init(anonAadhaarInitArgs);
 
+const nullifierSeed = 1234;
+
 // QRData: the string read from the QR code
 // certificate: x509 certificate containing the public key
 // it can be downloaded from: https://www.uidai.gov.in/en/916-developer-section/data-and-downloads-section/11349-uidai-certificate-details.html
-const args = await generateArgs(QRData, certificate);
+const args = await generateArgs({
+  QRData,
+  certificateFile,
+  nullifierSeed,
+});
 
 const anonAadhaarCore = await prove(args);
 ```
@@ -45,11 +51,15 @@ Once the proof is generated the output will be an `AnonAadhaarCore` object, it's
 
 Here are the details of the `anonAadhaarProof`:
 
-- `userNullifier`: Hash(last 4 digits, photo bytes).
-- `identityNullifier`: Hash(last 4 digits, DOB, name, gender, and pin code).
+- `nullifier`: Hash(nullifierSeed, photo bytes).
 - `timestamp`: Timestamp of the QR code signature, could be used to ensure that the proof was generated x hours ago.
 - `pubkeyHash`: Hash of the public key.
+- `nullifierSeed`: Let you check that the nullifier was indeed computed with your seed.
 - `signalHash`: Hash of the signal.
+- `ageAbove18`: "0", if false, "1" if true.
+- `gender`: "77" if M, "70" if F.
+- `state`: State name in string format.
+- `pincode`: Pincode in string format.
 - `groth16Proof`: The groth16 SNARK proof.
 
 ### Verify a proof off-chain
@@ -76,17 +86,19 @@ import "@anon-aadhaar/contracts/interfaces/IAnonAadhaar.sol";
 
 Then you can call the verifier, by sending these parameters:
 
-- `identityNullifier`
-- `userNullifier`
+- `nullifierSeed`
+- `nullifier`
 - `timestamp`
 - `signal`
+- `revealArray`: Array of the values used as input for the proof generation (equal to [0, 0, 0, 0] if no field reveal where asked)
 
 ```javascript
 IAnonAadhaar(anonAadhaarVerifierAddr).verifyAnonAadhaarProof(
-  identityNullifier,
-  userNullifier,
+  nullifierSeed, // nulifier seed
+  nullifier,
   timestamp,
   signal,
+  revealArray,
   groth16Proof
 );
 ```
@@ -135,21 +147,52 @@ contract AnonAadhaarVote is IAnonAadhaarVote {
 
     /// @dev Register a vote in the contract.
     /// @param proposalIndex: Index of the proposal you want to vote for.
-    /// @param identityNullifier: Hash of last the 4 digits + DOB, name, gender adn pin code.
-    /// @param userNullifier: Hash of the last 4 digits + photo.
+    /// @param nullifierSeed: Nullifier Seed used while generating the proof.
+    /// @param nullifier: Nullifier for the user's Aadhaar data.
     /// @param timestamp: Timestamp of when the QR code was signed.
     /// @param signal: signal used while generating the proof, should be equal to msg.sender.
+    /// @param revealArray: Array of the values used as input for the proof generation (equal to [0, 0, 0, 0] if no field reveal where asked).
     /// @param groth16Proof: SNARK Groth16 proof.
-    function voteForProposal(uint256 proposalIndex, uint identityNullifier, uint userNullifier, uint timestamp, uint signal, uint[8] memory groth16Proof ) public {
-        require(proposalIndex < proposals.length, "[AnonAadhaarVote]: Invalid proposal index");
-        require(addressToUint256(msg.sender) == signal, "[AnonAadhaarVote]: wrong user signal sent.");
-        require(isLessThan3HoursAgo(timestamp) == true, "[AnonAadhaarVote]: Proof must be generated with Aadhaar data generated less than 3 hours ago.");
-        require(IAnonAadhaar(anonAadhaarVerifierAddr).verifyAnonAadhaarProof(identityNullifier, userNullifier, timestamp, signal, groth16Proof) == true, "[AnonAadhaarVote]: proof sent is not valid.");
+    function voteForProposal(
+        uint256 proposalIndex,
+        uint nullifierSeed,
+        uint nullifier,
+        uint timestamp,
+        uint signal,
+        uint[4] memory revealArray,
+        uint[8] memory groth16Proof
+    ) public {
+        require(
+            proposalIndex < proposals.length,
+            '[AnonAadhaarVote]: Invalid proposal index'
+        );
+        require(
+            addressToUint256(msg.sender) == signal,
+            '[AnonAadhaarVote]: wrong user signal sent.'
+        );
+        require(
+            isLessThan3HoursAgo(timestamp) == true,
+            '[AnonAadhaarVote]: Proof must be generated with Aadhaar data generated less than 3 hours ago.'
+        );
+        require(
+            IAnonAadhaar(anonAadhaarVerifierAddr).verifyAnonAadhaarProof(
+                nullifierSeed, // nulifier seed
+                nullifier,
+                timestamp,
+                signal,
+                revealArray,
+                groth16Proof
+            ) == true,
+            '[AnonAadhaarVote]: proof sent is not valid.'
+        );
         // Check that user hasn't already voted
-        require(!hasVoted[userNullifier], "[AnonAadhaarVote]: User has already voted");
+        require(
+            !hasVoted[nullifier],
+            '[AnonAadhaarVote]: User has already voted'
+        );
 
         proposals[proposalIndex].voteCount++;
-        hasVoted[userNullifier] = true;
+        hasVoted[nullifier] = true;
 
         emit Voted(msg.sender, proposalIndex);
     }
@@ -161,4 +204,5 @@ There is some some important details to notice here.
 
 - `signal`, is used as way to prevent from the proof being front-runned, while the proof will be generated the user will commit to his address as a signal and the contract will check that the `msg.sender` is corresponding to the `signal`.
 - `timestamp`, is used as a way to verify that the proof was generated from a QR code created less than # hours ago.
-- `userNullifier`, is used to nullify the user contract interaction, letting him voting only once as the userNullifier will remain unique for each identity.
+- `nullifier`, is used to nullify the user contract interaction, letting him voting only once as the nullifier will remain unique for each identity.
+- `nullifierSeed`, to prevent double spending, letting your app know what was the seed to the nullifier.

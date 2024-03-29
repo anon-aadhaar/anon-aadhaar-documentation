@@ -142,4 +142,6 @@ You can find an example app [here](https://github.com/anon-aadhaar/quick-setup)
 
 ### Download test files
 
-You can find a test Aadhaar QR code [here](https://uidai.gov.in/en/ecosystem/authentication-devices-documents/qr-code-reader.html).
+You can find a test Aadhaar QR code [here](./img/V2TestQR.png).
+
+![V2 Test QR code](./img/V2TestQR.png)

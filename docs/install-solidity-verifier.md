@@ -73,10 +73,11 @@ Now you can call the verifier from your contract:
 
 ```javascript
 IAnonAadhaar(anonAadhaarVerifierAddr).verifyAnonAadhaarProof(
-  identityNullifier,
-  userNullifier,
+  nullifierSeed, // nulifier seed
+  nullifier,
   timestamp,
   signal,
+  revealArray,
   groth16Proof
 );
 ```

@@ -54,7 +54,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
 ## Add the AnonAadhaar connect button and hook
 
-```js
+You will need to give a nullifierSeed to the `LogInWithAnonAadhaar` component, you can generate one [here](./generate-seed.mdx).
+
+```jsx
 import { LogInWithAnonAadhaar, useAnonAadhaar } from "anon-aadhaar-react";
 import { useEffect } from "react";
 
@@ -67,7 +69,7 @@ export default function Home() {
 
   return (
     <div>
-      <LogInWithAnonAadhaar />
+      <LogInWithAnonAadhaar nullifierSeed={1234} />
       <p>{anonAadhaar?.status}</p>
     </div>
   );
@@ -77,6 +79,37 @@ export default function Home() {
 Now your users can log into your app by generating an `anonAadhaarProof`, this button will open a modal and let the user upload his Aadhaar card pdf and its certificate.
 
 Once the user is 'logged-in' you can access and display the proof.
+
+## Add a signal to sign
+
+Optionally, you can set a signal for the user to sign while generating the proof.
+
+```jsx
+<LogInWithAnonAadhaar nullifierSeed={1234} signal="your signal" />
+```
+
+## Ask the user to reveal data from ID
+
+Optionally, you can ask the user to reveal fields from his identity. Here are the options:
+
+```ts
+export type FieldKey =
+  | "revealAgeAbove18"
+  | "revealGender"
+  | "revealState"
+  | "revealPinCode";
+```
+
+You can choose what information you need from the user an fil the `fieldsToReveal` param like so:
+
+```jsx
+<LogInWithAnonAadhaar
+  nullifierSeed={1234}
+  fieldsToReveal={["revealAgeAbove18", "revealPinCode"]}
+/>
+```
+
+In this example a boolean telling if the user is more than 18 and its full pincode will be revealed in the proof.
 
 ## Display the anon Aadhaar proof
 
@@ -97,7 +130,7 @@ export default function Home() {
 
   return (
     <div>
-      <LogInWithAnonAadhaar />
+      <LogInWithAnonAadhaar nullifierSeed={1234} />
       <p>{anonAadhaar?.status}</p>
     </div>
     <div >
@@ -162,6 +195,4 @@ You can find an example app [here](https://github.com/anon-aadhaar/quick-setup)
 
 ### Download test files
 
-You can find a test Aadhaar QR code [here](./img/V2TestQR.png).
-
-![V2 Test QR code](./img/V2TestQR.png)
+You can generate a test Aadhaar QR code [here](./generate-qr.mdx).

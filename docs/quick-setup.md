@@ -115,6 +115,26 @@ export default function Home() {
 
 ---
 
+# Troubleshooting
+
+You might have issues with next when installing the package. You will need to add this to your `next.config.js`
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false,
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false,
+      readline: false,
+    };
+    return config;
+  },
+};
+
+module.exports = nextConfig;
+```
+
 ## Run Anon Aadhaar on localhost mode
 
 This enables you to run the proving flow without having to each time fetch zk artifacts from AWS, as it be quite long in case of a low internet speed.
@@ -122,9 +142,9 @@ In order to do that you'll download the zk artifacts on you computer, and add th
 
 Here are the links to download the files, just click the links and it will download the files:
 
-- /aadhaar-verfier.wasm: [test](https://d1l6t78iyuhldt.cloudfront.net/aadhaar-verifier.wasm) | [prod](https://d1re67zv2jtrxt.cloudfront.net/aadhaar-verifier.wasm)
-- /circuit_final.zkey: [test](https://d1l6t78iyuhldt.cloudfront.net/circuit_final.zkey) | [prod](https://d1re67zv2jtrxt.cloudfront.net/circuit_final.zkey)
-- /vkey.json: [test](https://d1l6t78iyuhldt.cloudfront.net/vkey.json) | [prod](https://d1re67zv2jtrxt.cloudfront.net/vkey.json)
+- /[aadhaar-verfier.wasm](https://d1re67zv2jtrxt.cloudfront.net/aadhaar-verifier.wasm)
+- /[circuit_final.zkey](https://d1re67zv2jtrxt.cloudfront.net/circuit_final.zkey)
+- /[vkey.json](https://d1re67zv2jtrxt.cloudfront.net/vkey.json)
 
 Make sure you file as the **same name as above** and are at the same place in your `public` folder
 

@@ -53,6 +53,10 @@ const sidebars = {
       type: "doc",
       id: "generate-seed",
     },
+    {
+      type: "doc",
+      id: "generate-qr",
+    },
   ],
 
   // But you can create a sidebar manually

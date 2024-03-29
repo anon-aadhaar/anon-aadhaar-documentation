@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import QRCode from "qrcode";
-import { Oval } from "react-loader-spinner";
 
 export default function QRGenerator() {
   const [qrCodeUrl, setQrCodeUrl] = useState("");

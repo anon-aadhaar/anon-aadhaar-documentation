@@ -8,7 +8,7 @@ export default function QRGenerator() {
   const generateNewQR = async () => {
     setLoading(true);
     const privateKeyResponse = await fetch(
-      "https://nodejs-serverless-function-express-eight-iota.vercel.app/api/get-fresh-qr"
+      "https://anon-aadhaar-helpers.vercel.app/api/get-fresh-qr"
     );
 
     if (!privateKeyResponse.ok) {

@@ -25,7 +25,7 @@ This needs to be **at the root of your app** add the AnonAadhaar Provider and in
 ```tsx
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { AnonAadhaarProvider } from "anon-aadhaar-react";
+import { AnonAadhaarProvider } from "@anon-aadhaar/react";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -41,7 +41,7 @@ The SDK is initially configured to validate a real Aadhaar card by default. You 
 ```tsx
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { AnonAadhaarProvider } from "anon-aadhaar-react";
+import { AnonAadhaarProvider } from "@anon-aadhaar/react";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -57,7 +57,7 @@ export default function App({ Component, pageProps }: AppProps) {
 You will need to give a nullifierSeed to the `LogInWithAnonAadhaar` component, you can generate one [here](./generate-seed.mdx).
 
 ```jsx
-import { LogInWithAnonAadhaar, useAnonAadhaar } from "anon-aadhaar-react";
+import { LogInWithAnonAadhaar, useAnonAadhaar } from "@anon-aadhaar/react";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -118,7 +118,7 @@ import {
   LogInWithAnonAadhaar,
   useAnonAadhaar,
   AnonAadhaarProof,
-} from "anon-aadhaar-react";
+} from "@anon-aadhaar/react";
 import { useEffect } from "react";
 
 export default function Home() {

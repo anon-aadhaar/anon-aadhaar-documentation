@@ -58,9 +58,18 @@ Here are the details of the `anonAadhaarProof`:
 - `signalHash`: Hash of the signal.
 - `ageAbove18`: "0", if false, "1" if true.
 - `gender`: "77" if M, "70" if F.
-- `state`: State name in string format.
+- `state`: State in BigInt format.
 - `pincode`: Pincode in string format.
 - `groth16Proof`: The groth16 SNARK proof.
+
+For decoding BigInt formatted `gender` and `state`:
+
+```javascript
+import { convertRevealBigIntToString } from "@anon-aadhaar/core";
+
+convertRevealBigIntToString(gender)
+```
+
 
 ### Verify a proof off-chain
 

@@ -14,7 +14,7 @@ Anon Aadhaar is a zero-knowledge protocol designed to enable Aadhaar citizens to
 
 #### RSA and Document Verification
 
-At the core of this verification process lies RSA, a powerful cryptographic signature algorithm. RSA involves a private key used for signing and a corresponding public key used for verification of signatures. The innovative part of the Anon Aadhaar protocol is that this verification happens inside of a circuit, and the process results in a zk SNARK proof, hidding all the personal information needed to verify the signature. Resulting in a proof that attest indetity without revealing it.
+At the core of this verification process lies RSA, a powerful cryptographic signature algorithm. RSA involves a private key used for signing and a corresponding public key used for verification of signatures. The innovative part of the Anon Aadhaar protocol is that this verification happens inside of a circuit, and the process results in a zk SNARK proof, hidding all the personal information needed to verify the signature. Resulting in a proof that attest identity without revealing it.
 
 Here are the steps happening while generating the proof:
 

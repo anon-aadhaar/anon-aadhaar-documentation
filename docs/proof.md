@@ -133,7 +133,7 @@ contract AnonAadhaarVote is IAnonAadhaarVote {
 
     /// @dev Convert an address to uint256, used to check against signal.
     /// @param _addr: msg.sender address.
-    /// @return Address msg.sender's address in uint256
+    /// @return Address msg.sender's hashed address in uint256
     function signalHashVerifier(address _addr) private pure returns (uint256) {
          // Convert address to uint256
         uint256 addrAsUint = uint256(uint160(_addr));

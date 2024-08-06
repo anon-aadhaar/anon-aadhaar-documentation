@@ -123,6 +123,7 @@ import { useEffect } from "react";
 
 export default function Home() {
   const [anonAadhaar] = useAnonAadhaar();
+  const [, latestProof] = useProver();
 
   useEffect(() => {
     console.log("Anon Aadhaar status: ", anonAadhaar.status);
@@ -138,7 +139,9 @@ export default function Home() {
       {anonAadhaar?.status === "logged-in" && (
         <>
           <p>✅ Proof is valid</p>
-          <AnonAadhaarProof code={JSON.stringify(anonAadhaar.anonAadhaarProof, null, 2)}/>
+          {latestProof && (
+              <AnonAadhaarProof code={JSON.stringify(latestProof, null, 2)} />
+            )}
         </>
         )}
     </div>
@@ -184,7 +187,14 @@ Make sure you file as the **same name as above** and are at the same place in yo
 Then you'll pass the `_fetchArtifactsFromServer={false}` variable to the Provider like so:
 
 ```jsx
-<AnonAadhaarProvider _fetchArtifactsFromServer={false}>
+<AnonAadhaarProvider
+  _useTestAadhaar={true}
+  _artifactslinks={{
+    zkey_url: "/circuit_final.zkey",
+    vkey_url: "/vkey.json",
+    wasm_url: "/aadhaar-verfier.wasm",
+  }}
+>
   <Component {...pageProps} />
 </AnonAadhaarProvider>
 ```

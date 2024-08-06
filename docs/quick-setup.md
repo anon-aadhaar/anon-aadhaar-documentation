@@ -123,6 +123,7 @@ import { useEffect } from "react";
 
 export default function Home() {
   const [anonAadhaar] = useAnonAadhaar();
+  const [, latestProof] = useProver();
 
   useEffect(() => {
     console.log("Anon Aadhaar status: ", anonAadhaar.status);
@@ -138,7 +139,9 @@ export default function Home() {
       {anonAadhaar?.status === "logged-in" && (
         <>
           <p>✅ Proof is valid</p>
-          <AnonAadhaarProof code={JSON.stringify(anonAadhaar.anonAadhaarProof, null, 2)}/>
+          {latestProof && (
+              <AnonAadhaarProof code={JSON.stringify(latestProof, null, 2)} />
+            )}
         </>
         )}
     </div>

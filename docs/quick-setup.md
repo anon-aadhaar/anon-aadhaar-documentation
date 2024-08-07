@@ -178,9 +178,9 @@ In order to do that you'll download the zk artifacts on you computer, and add th
 
 Here are the links to download the files, just click the links and it will download the files:
 
-- /[aadhaar-verfier.wasm](https://d1re67zv2jtrxt.cloudfront.net/aadhaar-verifier.wasm)
-- /[circuit_final.zkey](https://d1re67zv2jtrxt.cloudfront.net/circuit_final.zkey)
-- /[vkey.json](https://d1re67zv2jtrxt.cloudfront.net/vkey.json)
+- /[aadhaar-verfier.wasm](https://anon-aadhaar-artifacts.s3.eu-central-1.amazonaws.com/aadhaar-verifier.wasm)
+- /[circuit_final.zkey](https://anon-aadhaar-artifacts.s3.eu-central-1.amazonaws.com/circuit_final.zkey)
+- /[vkey.json](https://anon-aadhaar-artifacts.s3.eu-central-1.amazonaws.com/vkey.json)
 
 Make sure you file as the **same name as above** and are at the same place in your `public` folder
 

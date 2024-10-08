@@ -37,6 +37,6 @@ In addition to the circuit, Anon Aadhaar provides a Solidity Verifier contract a
 
 ### Links
 
-- [Anon Aadhaar repository](https://github.com/privacy-scaling-explorations/anon-aadhaar)
-- [Example voting app](https://anon-aadhaar-example.vercel.app/)
+- [Anon Aadhaar repository](https://github.com/anon-aadhaar/anon-aadhaar)
+- [Example voting app](https://boilerplate.anon-aadhaar.pse.dev/)
 - [Boilerplate repository](https://github.com/anon-aadhaar/boilerplate)

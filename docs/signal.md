@@ -17,30 +17,41 @@ return <LogInWithAnonAadhaar signal={"any signal value"} />;
 When using `@anon-aadhaar/core`, you can pass a custom value to the `generateArgs` function:
 
 ```typescript
-import { init, prove, InitArgs, artifactUrls } from "@anon-aadhaar/core";
+import { init, prove, artifactUrls, ArtifactsOrigin, generateArgs } from "@anon-aadhaar/core";
+import type { InitArgs } from "@anon-aadhaar/core";
+import { certificate } from "./src/utils/certificate";
+import { qrCode } from "./src/utils/qr-code";
 
 // Change prod to test if you want to verify the test Aadhaar data
 const anonAadhaarInitArgs: InitArgs = {
-  wasmURL: artifactsUrls.prod.wasm,
-  zkeyURL: artifactsUrls.prod.zkey,
-  vkeyURL: artifactsUrls.prod.vk,
-  isWebEnv: true,
+  wasmURL:  artifactUrls.v2.wasm,
+  zkeyURL: artifactUrls.v2.zkey,
+  vkeyURL: artifactUrls.v2.vk,
+  artifactsOrigin: ArtifactsOrigin.server,
 };
 
-// Initialize the core package
-await init(anonAadhaarInitArgs);
+try {
+  // Initialize the core package
+  await init(anonAadhaarInitArgs);
 
-const nullifierSeed = 1234;
+  const nullifierSeed = 1234;
 
-// QRData: the string read from the QR code
-// certificate: x509 certificate containing the public key
-// it can be downloaded from: https://www.uidai.gov.in/en/916-developer-section/data-and-downloads-section/11349-uidai-certificate-details.html
-const args = await generateArgs({
-  QRData,
-  certificateFile,
-  signal: "any signal value",
-  nullifierSeed,
-});
+  // QR code data as a string from qr png named download.png
+  const qrData = qrCode;
 
-const anonAadhaarCore = await prove(args);
+  // certificate: x509 certificate containing the public key
+  // it can be downloaded from: https://www.uidai.gov.in/en/916-developer-section/data-and-downloads-section/11349-uidai-certificate-details.html
+  const args = await generateArgs({
+    qrData,
+    certificateFile: certificate,
+    signal: "1234532454678",
+    nullifierSeed,
+    fieldsToRevealArray: ['revealAgeAbove18','revealGender','revealPinCode','revealState']
+  });
+
+  const anonAadhaarCore = await prove(args);
+  console.log("Proof generated successfully:", anonAadhaarCore);
+} catch (error) {
+  console.error("An error occurred:", error);
+}
 ```

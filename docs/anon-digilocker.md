@@ -6,7 +6,7 @@ sidebar_position: 2
 
 **Anon DigiLocker** is a protocol for proving ownership of identity documents in DigiLocker by selectively revealing information in the doc.
 
-We create Zero Knowledge Proof of signed XML documents from DigiLocker. Proof generation happens entirely on the browser meaning no data has to be sent to a server. The proof can be verified on-chain and off-chain.
+We create Zero Knowledge Proof for proving ownership of any signed documents stored in DigiLocker. Proof generation happens entirely on the browser meaning no data has to be sent to a server. The proof can be verified on-chain and off-chain.
 
 **Github Repo: [https://github.com/anon-aadhaar/anon-digilocker](https://github.com/anon-aadhaar/anon-digilocker)** <br/>
 **Demo: [https://anon-digilocker.vercel.app/](https://anon-digilocker.vercel.app/)**
@@ -36,7 +36,7 @@ We create Zero Knowledge Proof of signed XML documents from DigiLocker. Proof ge
 
 This repo contains the core ZK circuits of Anon DigiLocker and JS SDK for developers to integrate into their applications. 
 
-The following packages are available, and published to npm:
+The following packages are available on github.
 
 - [@anon-digilocker/circuits](https://github.com/anon-aadhaar/anon-digilocker/tree/main/packages/circuits) - ZK circuits of Anon DigiLocker written in circom
 - [@anon-digilocker/core](https://github.com/anon-aadhaar/anon-digilocker/tree/main/packages/core) - JS SDK to generate and verify Anon DigiLocker proofs

@@ -27,6 +27,7 @@ const sidebars = {
       type: "doc",
       id: "quick-setup",
     },
+   
     {
       type: "doc",
       id: "install-solidity-verifier",
@@ -57,8 +58,11 @@ const sidebars = {
       type: "doc",
       id: "generate-qr",
     },
+    {
+      type: "doc",
+      id: "anon-digilocker",
+    },
   ],
-
   // But you can create a sidebar manually
   /*
   tutorialSidebar: [

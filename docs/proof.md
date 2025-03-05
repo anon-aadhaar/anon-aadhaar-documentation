@@ -13,14 +13,14 @@ yarn add @anon-aadhaar/core
 Then:
 
 ```typescript
-import { init, prove, InitArgs, artifactUrls } from "@anon-aadhaar/core";
+import { init, prove, InitArgs, artifactUrls , ArtifactsOrigin } from "@anon-aadhaar/core";
 
 // Change prod to test if you want to verify the test Aadhaar data
 const anonAadhaarInitArgs: InitArgs = {
   wasmURL: artifactsUrls.prod.wasm,
   zkeyURL: artifactsUrls.prod.zkey,
   vkeyURL: artifactsUrls.prod.vk,
-  isWebEnv: true,
+  artifactsOrigin: ArtifactsOrigin.server
 };
 
 // Initialize the core package
